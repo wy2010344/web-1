@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          #cache: 'yarn'
+          cache: 'yarn'
 
       # ---------- 2. 解析 config.json ----------
       - name: 读取配置
@@ -34,12 +34,22 @@ jobs:
             curl -L -o "${lib}.tgz" "$URL"
           done
 
-      # ---------- 4. 安装依赖 & 上游包 ----------
-      - name: 安装最新上游包
+
+      # ---------- 3. 只删掉上游包目录 + lock 条目 ----------
+      - name: 清除上游包缓存
         run: |
-          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}.tgz"          # 自动写进 dependencies
+          for lib in $(jq -r '.[]' .github/config.json); do
+            rm -rf node_modules/${lib}                 # 强制删磁盘
+            sed -i "/^\"${lib}@file:/,/^$/d" yarn.lock # 删 lock 条目
           done
+
+      # ---------- 4. 重新装（只解压这两个包） ----------
+      - name: 安装上游包
+        run: |
+          for lib in $(jq -r '.[]' .github/config.json); do
+            yarn add "./${lib}.tgz" --update-checksums
+          done
+
       # ---------- 5. 构建 ----------
       - name: 构建
         run: yarn build
