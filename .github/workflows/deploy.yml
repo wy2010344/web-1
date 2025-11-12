@@ -3,7 +3,8 @@ name: deploy
 on:
   push:
     branches: [main, dev, test]   # 只在这三个环境分支触发
-
+  repository_dispatch:   # ← 监听分发事件
+    types: [lib-update] 
 jobs:
   deploy:
     runs-on: ubuntu-latest
