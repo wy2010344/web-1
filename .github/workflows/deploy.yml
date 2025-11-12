@@ -40,7 +40,6 @@ jobs:
         run: |
           for lib in $(jq -r '.[]' .github/config.json); do
             rm -rf node_modules/${lib}                 # 强制删磁盘
-            sed -i "\#^\"${lib}@file:#,\#^$\#d" yarn.lock
           done
 
       # ---------- 4. 重新装（只解压这两个包） ----------
