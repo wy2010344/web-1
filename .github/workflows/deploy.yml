@@ -30,7 +30,7 @@ jobs:
       - name: 下载上游 tgz
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            URL="https://github.com/wy2010344/${lib}/releases/download/${{ github.ref_name }}/${lib}.tgz"
+            URL="https://github.com/wy2010344/${lib}/releases/download/${{ github.ref_name }}/${lib}.tgz?t=$(date +%s)"
             curl -L -o "${lib}.tgz" "$URL"
           done
 
