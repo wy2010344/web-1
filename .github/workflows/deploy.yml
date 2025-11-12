@@ -37,10 +37,10 @@ jobs:
       # ---------- 4. 安装依赖 & 上游包 ----------
       - name: 安装
         run: |
-          yarn install
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             yarn add "./${lib}.tgz" --no-cache
           done
+          yarn install
       # ---------- 5. 构建 ----------
       - name: 构建
         run: yarn build
