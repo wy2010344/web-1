@@ -43,11 +43,6 @@ jobs:
           done
 
           yarn install
-
-          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}.tgz"
-          done
-
       # ---------- 5. 构建 ----------
       - name: 构建
         run: yarn build
