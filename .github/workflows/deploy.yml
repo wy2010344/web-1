@@ -45,7 +45,7 @@ jobs:
       # ---------- 4. 重新装（只解压这两个包） ----------
       - name: 安装上游包
         run: |
-          for lib in $(jq -r '.[]' .github/config.json); do
+          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             yarn add "./${lib}.tgz" --update-checksums
           done
 
