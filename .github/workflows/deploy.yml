@@ -38,7 +38,7 @@ jobs:
       # ---------- 3. 只删掉上游包目录 + lock 条目 ----------
       - name: 清除上游包缓存
         run: |
-          for lib in $(jq -r '.[]' .github/config.json); do
+          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             rm -rf node_modules/${lib}                 # 强制删磁盘
           done
 
