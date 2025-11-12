@@ -37,13 +37,9 @@ jobs:
       # ---------- 4. 安装依赖 & 上游包 ----------
       - name: 安装最新上游包
         run: |
-          # 1. 删掉 lock 里对应 file: 条目（此时 tgz 已存在）
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            sed -i "/^\"${lib}@file:/,/^$/d" yarn.lock
+            yarn add "./${lib}.tgz"          # 自动写进 dependencies
           done
-
-          # 2. 重新解析 + 解压
-          yarn install
       # ---------- 5. 构建 ----------
       - name: 构建
         run: yarn build
