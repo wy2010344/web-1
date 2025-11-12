@@ -40,6 +40,7 @@ jobs:
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             rm -rf node_modules/${lib}                 # 强制删磁盘
+            sed -i "/^\"${lib}@file:/,/^$/d" yarn.lock # 删 lock 条目
           done
 
       # ---------- 4. 重新装（只解压这两个包） ----------
