@@ -37,9 +37,15 @@ jobs:
       # ---------- 4. 安装依赖 & 上游包 ----------
       - name: 安装
         run: |
-          yarn install
+         # 1. 从 yarn.lock 里删掉上游包条目
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}.tgz" --no-cache
+            sed -i "/^\"${lib}@file:/,/^$/d" yarn.lock
+          done
+
+          yarn install
+
+          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
+            yarn add "./${lib}.tgz"
           done
 
       # ---------- 5. 构建 ----------
