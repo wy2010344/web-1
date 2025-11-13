@@ -31,23 +31,14 @@ jobs:
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             URL="https://github.com/wy2010344/${lib}/releases/download/${{ github.ref_name }}/${lib}.tgz?t=$(date +%s)"
-            curl -L -o "${lib}.tgz" "$URL"
-          done
-
-
-      # ---------- 3. 只删掉上游包目录 + lock 条目 ----------
-      - name: 清除上游包缓存
-        run: |
-          for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            rm -rf node_modules/${lib}                 # 强制删磁盘
-            sed -i "/^\"${lib}@file:/,/^$/d" yarn.lock # 删 lock 条目
+            curl -L -o "${lib}-${GITHUB_SHA}.tgz"  "$URL"
           done
 
       # ---------- 4. 重新装（只解压这两个包） ----------
       - name: 安装上游包
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}.tgz" --update-checksums
+            yarn add "./${lib}-${GITHUB_SHA}.tgz"
           done
 
       # ---------- 5. 构建 ----------
