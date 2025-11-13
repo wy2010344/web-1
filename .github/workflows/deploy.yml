@@ -35,14 +35,14 @@ jobs:
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             URL="https://github.com/wy2010344/${lib}/releases/download/${{ github.ref_name }}/${lib}.tgz?t=$(date +%s)"
-            curl -L -o "${lib}-${steps.ts.outputs.ts}.tgz"  "$URL"
+            curl -L -o "${lib}-${{ steps.ts.outputs.ts }}.tgz"  "$URL"
           done
 
       # ---------- 4. 重新装（只解压这两个包） ----------
       - name: 安装上游包
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}-${steps.ts.outputs.ts}.tgz"
+            yarn add "./${lib}-${{ steps.ts.outputs.ts }}.tgz"
           done
 
       # ---------- 5. 构建 ----------
