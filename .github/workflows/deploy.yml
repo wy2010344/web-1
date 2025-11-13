@@ -25,20 +25,24 @@ jobs:
         run: |
           echo "deps=$(jq -c '.dependencies' .github/config.json)" >> $GITHUB_OUTPUT
           echo "target=$(jq -r ".target.${{ github.ref_name }}" .github/config.json)" >> $GITHUB_OUTPUT
+      
+      - name: 生成统一时间戳
+        id: ts
+        run: echo "ts=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
 
       # ---------- 3. 批量下载同分支上游包 ----------
       - name: 下载上游 tgz
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
             URL="https://github.com/wy2010344/${lib}/releases/download/${{ github.ref_name }}/${lib}.tgz?t=$(date +%s)"
-            curl -L -o "${lib}-${GITHUB_SHA}.tgz"  "$URL"
+            curl -L -o "${lib}-${steps.ts.outputs.ts}.tgz"  "$URL"
           done
 
       # ---------- 4. 重新装（只解压这两个包） ----------
       - name: 安装上游包
         run: |
           for lib in $(echo '${{ steps.cfg.outputs.deps }}' | jq -r '.[]'); do
-            yarn add "./${lib}-${GITHUB_SHA}.tgz"
+            yarn add "./${lib}-${steps.ts.outputs.ts}.tgz"
           done
 
       # ---------- 5. 构建 ----------
